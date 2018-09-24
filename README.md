@@ -4,7 +4,7 @@ simple logarithmic time lookup of strings, also at compile time
 
 no macros
 
-```
+```c++
 int get_color()
 {
   constexpr auto color = rekt::make_string_enum("red", "green", "blue");
