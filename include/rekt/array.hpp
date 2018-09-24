@@ -1,5 +1,4 @@
 #include <utility>
-#include <initializer_list>
 
 #pragma once
 
@@ -28,12 +27,12 @@ class array
 public:
   constexpr array() = delete;
   constexpr array(array const&) = default;
-  constexpr array &operator=(array const&) = default;
+  array &operator=(array const&) = default;
   constexpr array(T const *ptr)
     : array{ ptr, make_index_sequence<N>{} }
   {}
-  constexpr array(std::initializer_list<T> list)
-    : array{ &*list.begin(), make_index_sequence<N>{} }
+  constexpr array(T const (&arr)[N])
+    : array{ arr, make_index_sequence<N>{} }
   {}
 
   constexpr T const *data() const
@@ -76,7 +75,7 @@ class array_view
 public:
   constexpr array_view() = delete;
   constexpr array_view(array_view const&) = default;
-  constexpr array_view &operator=(array_view const&) = default;
+  array_view &operator=(array_view const&) = default;
   constexpr array_view(T const *ptr, std::size_t size)
     : data_{ ptr },
       size_{ size }

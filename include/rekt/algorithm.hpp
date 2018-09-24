@@ -88,7 +88,7 @@ constexpr array<E, N> swap(array<E, N> const &a, std::size_t i, std::size_t j)
 template <typename E, std::size_t N, std::size_t... I>
 constexpr array<E, N> swap(array<E, N> const &a, std::size_t i, std::size_t j, index_sequence<I...> const&)
 {
-  return { a[I == i ? j : I == j ? i : I]... };
+  return array<E, N>({ a[I == i ? j : I == j ? i : I]... });
 }
 
 template <typename E, std::size_t N, typename P>

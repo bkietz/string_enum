@@ -15,7 +15,7 @@ public:
 
   template <std::size_t... N>
   constexpr basic_string_enum(Char const (&...strings)[N])
-    : strings_{ sort(array<string_view, Count>{ string_view{ static_cast<Char const *>(strings), N - 1 }... }, strless) }
+    : strings_{ sort(array<string_view, Count>({ string_view{ static_cast<Char const *>(strings), N - 1 }... }), strless) }
   {}
   
   template <std::size_t N>
