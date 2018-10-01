@@ -12,12 +12,19 @@ constexpr array<E, N> swap(array<E, N> const &a, std::size_t i, std::size_t j);
 template <typename E, std::size_t N, std::size_t... I>
 constexpr array<E, N> swap(array<E, N> const &a, std::size_t i, std::size_t j, index_sequence<I...> const&);
 
-template <typename E, std::size_t N, typename P>
-constexpr std::pair<array<E, N>, std::size_t> partition(array<E, N> const &a, P const &p);
+// rassafrassa std::make_pair isn't constexpr
+template <typename E, std::size_t N>
+struct partition_result
+{
+  array<E, N> container;
+  std::size_t partition_point;
+};
 
 template <typename E, std::size_t N, typename P>
-constexpr std::pair<array<E, N>, std::size_t>
-partition_range(array<E, N> const &a, std::size_t b, std::size_t e, P const &p);
+constexpr partition_result<E, N> partition(array<E, N> const &a, P const &p);
+
+template <typename E, std::size_t N, typename P>
+constexpr partition_result<E, N> partition_range(array<E, N> const &a, std::size_t b, std::size_t e, P const &p);
 
 template <typename E, std::size_t N, typename P>
 constexpr array<E, N> sort_2(array<E, N> const &a, std::size_t b, P const &p);
@@ -26,7 +33,7 @@ template <typename E, std::size_t N, typename P>
 constexpr array<E, N> sort_3(array<E, N> const &a, std::size_t b, P const &p);
 
 template <typename E, std::size_t N, typename P>
-constexpr array<E, N> sort_4_plus(std::pair<array<E, N>, std::size_t> const &a_p, std::size_t b, std::size_t e, P const &p);
+constexpr array<E, N> sort_4_plus(partition_result<E, N> const &a_p, std::size_t b, std::size_t e, P const &p);
 
 template <typename E, std::size_t N, typename P>
 constexpr array<E, N> sort_4_plus(array<E, N> const &a, std::size_t b, std::size_t e, P const &p);
@@ -104,16 +111,16 @@ constexpr array<E, N> swap(array<E, N> const &a, std::size_t i, std::size_t j, i
 }
 
 template <typename E, std::size_t N, typename P>
-constexpr std::pair<array<E, N>, std::size_t> partition(array<E, N> const &a, P const &p)
+constexpr partition_result<E, N> partition(array<E, N> const &a, P const &p)
 {
   return partition_range(a, 0, N, p);
 }
 
 template <typename E, std::size_t N, typename P>
-constexpr std::pair<array<E, N>, std::size_t> partition_range(array<E, N> const &a, std::size_t b, std::size_t e, P const &p)
+constexpr partition_result<E, N> partition_range(array<E, N> const &a, std::size_t b, std::size_t e, P const &p)
 {
   return b == e
-    ? std::make_pair(a, b)
+    ? partition_result<E, N>{ a, b }
     : p(a[b])
       ? partition_range(a, b + 1, e, p)
       : !p(a[e - 1])
@@ -138,9 +145,9 @@ constexpr array<E, N> sort_3(array<E, N> const &a, std::size_t b, P const &p)
 }
 
 template <typename E, std::size_t N, typename P>
-constexpr array<E, N> sort_4_plus(std::pair<array<E, N>, std::size_t> const &a_p, std::size_t b, std::size_t e, P const &p)
+constexpr array<E, N> sort_4_plus(partition_result<E, N> const &a_p, std::size_t b, std::size_t e, P const &p)
 {
-  return sort_range(sort_range(swap(swap(a_p.first, 2, a_p.second - 1), 1, a_p.second - 2), b, a_p.second - 2, p), a_p.second - 2, e, p);
+  return sort_range(sort_range(swap(swap(a_p.container, 2, a_p.partition_point - 1), 1, a_p.partition_point - 2), b, a_p.partition_point - 2, p), a_p.partition_point - 2, e, p);
 }
 
 template <typename E, std::size_t N, typename P>
