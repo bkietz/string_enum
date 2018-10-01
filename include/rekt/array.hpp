@@ -22,12 +22,12 @@ struct make_index_sequence<Max, index_sequence<I...>, index_sequence<Max - 1, Ma
 
 template <std::size_t Max, std::size_t... I>
 struct make_index_sequence<Max, index_sequence<I...>, index_sequence<Max - 2, Max - 1, Max, Max + 1>>
-  : index_sequence<I..., Max - 1, Max - 2>
+  : index_sequence<I..., Max - 2, Max - 1>
 {};
 
 template <std::size_t Max, std::size_t... I>
 struct make_index_sequence<Max, index_sequence<I...>, index_sequence<Max - 3, Max - 2, Max - 1, Max>>
-  : index_sequence<I..., Max - 1, Max - 2, Max - 3>
+  : index_sequence<I..., Max - 3, Max - 2, Max - 1>
 {};
 
 template <std::size_t Max, std::size_t... Latest, std::size_t... I>
