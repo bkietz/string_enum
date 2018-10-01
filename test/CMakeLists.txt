@@ -8,3 +8,5 @@ add_library(Catch STATIC catch.cpp)
 
 add_executable(tests tests.cpp)
 target_link_libraries(tests Catch)
+
+add_executable(static_assertions static_assertions.cpp)
