@@ -81,8 +81,8 @@ public:
   }
 
 private:
-  P const &p_;
-  T const &rhs_;
+  P p_;
+  T rhs_;
 };
 
 constexpr struct
@@ -147,7 +147,7 @@ constexpr array<E, N> sort_3(array<E, N> const &a, std::size_t b, P const &p)
 template <typename E, std::size_t N, typename P>
 constexpr array<E, N> sort_4_plus(partition_result<E, N> const &a_p, std::size_t b, std::size_t e, P const &p)
 {
-  return sort_range(sort_range(swap(swap(a_p.container, 2, a_p.partition_point - 1), 1, a_p.partition_point - 2), b, a_p.partition_point - 2, p), a_p.partition_point - 2, e, p);
+  return sort_range(sort_range(swap(swap(a_p.container, 2, a_p.partition_point - 1), 1, a_p.partition_point - 2), b, a_p.partition_point - 2, p), a_p.partition_point - 1, e, p);
 }
 
 template <typename E, std::size_t N, typename P>

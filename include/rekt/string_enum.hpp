@@ -11,11 +11,19 @@ template <typename Char, std::size_t Count>
 class basic_string_enum
 {
 public:
-  using string_view = array_view<Char>;
+  struct string_view
+    : array_view<Char>
+  {
+    using array_view<Char>::array_view;
+    constexpr bool operator<(string_view other) const
+    {
+      return lexicographic_compare(*this, other) < 0;
+    }
+  };
 
   template <std::size_t... N>
   constexpr basic_string_enum(Char const (&...strings)[N])
-    : strings_{ sort(array<string_view, Count>({ string_view{ static_cast<Char const *>(strings), N - 1 }... }), strless) }
+    : strings_{ sort(array<string_view, Count>({ string_view{ static_cast<Char const *>(strings), N - 1 }... })) }
   {}
   
   template <std::size_t N>
@@ -30,14 +38,9 @@ public:
   }
 
 private:
-  static constexpr bool strless(string_view l, string_view r)
-  {
-    return lexicographic_compare(l, r) < 0;
-  }
-
   constexpr std::size_t lookup(string_view str) const
   {
-    return lookup(lower_bound(strings_, str, strless), str);
+    return lookup(lower_bound(strings_, str), str);
   }
 
   constexpr std::size_t lookup(std::size_t i, string_view str) const
