@@ -19,14 +19,14 @@ public:
   {}
   
   template <std::size_t N>
-  constexpr int operator()(Char const (&str)[N]) const
+  constexpr std::size_t operator()(Char const (&str)[N]) const
   {
-    return lookup({ static_cast<Char const *>(str), N - 1 }, 0, Count);
+    return lookup({ static_cast<Char const *>(str), N - 1 });
   }
 
-  int operator()(std::string const &str) const
+  std::size_t operator()(std::string const &str) const
   {
-    return lookup({ str.c_str(), str.size() }, 0, Count);
+    return lookup({ str.c_str(), str.size() });
   }
 
 private:
@@ -35,18 +35,14 @@ private:
     return lexicographic_compare(l, r) < 0;
   }
 
-  static constexpr bool streq(string_view l, string_view r)
+  constexpr std::size_t lookup(string_view str) const
   {
-    return lexicographic_compare(l, r) == 0;
+    return lookup(lower_bound(strings_, str, strless), str);
   }
 
-  constexpr int lookup(string_view str, std::size_t b, std::size_t e) const
+  constexpr std::size_t lookup(std::size_t i, string_view str) const
   {
-    return e - b == 1
-      ? (streq(str, strings_[b]) ? b : -1)
-      : strless(str, strings_[(b + e)/2])
-        ? lookup(str, b, (b + e)/2)
-        : lookup(str, (b + e)/2, e);
+    return lexicographic_compare(strings_[i], str) == 0 ? i : Count;
   }
 
   array<string_view, Count> strings_;

@@ -1,24 +1,38 @@
-#include <utility>
-
 #pragma once
+
+#include <utility>
 
 namespace rekt
 {
 template <std::size_t... I>
 struct index_sequence {};
 
-// TODO unroll this some
-template <std::size_t Max, typename Seq = index_sequence<0>>
+template <std::size_t Max, typename Accumulated = index_sequence<>, typename ToAppend = index_sequence<0, 1, 2, 3>>
 struct make_index_sequence;
 
 template <std::size_t Max, std::size_t... I>
-struct make_index_sequence<Max, index_sequence<Max, I...>>
+struct make_index_sequence<Max, index_sequence<I...>, index_sequence<Max, Max + 1, Max + 2, Max + 3>>
   : index_sequence<I...>
 {};
 
-template <std::size_t Max, std::size_t Latest, std::size_t... I>
-struct make_index_sequence<Max, index_sequence<Latest, I...>>
-  : make_index_sequence<Max, index_sequence<sizeof...(I) + 1, I..., Latest>>
+template <std::size_t Max, std::size_t... I>
+struct make_index_sequence<Max, index_sequence<I...>, index_sequence<Max - 1, Max, Max + 1, Max + 2>>
+  : index_sequence<I..., Max - 1>
+{};
+
+template <std::size_t Max, std::size_t... I>
+struct make_index_sequence<Max, index_sequence<I...>, index_sequence<Max - 2, Max - 1, Max, Max + 1>>
+  : index_sequence<I..., Max - 1, Max - 2>
+{};
+
+template <std::size_t Max, std::size_t... I>
+struct make_index_sequence<Max, index_sequence<I...>, index_sequence<Max - 3, Max - 2, Max - 1, Max>>
+  : index_sequence<I..., Max - 1, Max - 2, Max - 3>
+{};
+
+template <std::size_t Max, std::size_t... Latest, std::size_t... I>
+struct make_index_sequence<Max, index_sequence<I...>, index_sequence<Latest...>>
+  : make_index_sequence<Max, index_sequence<I..., Latest...>, index_sequence<Latest + 4 ...>>
 {};
 
 template <typename T, std::size_t N>
@@ -60,11 +74,29 @@ public:
     return data_[i];
   }
 
+  template <typename... A>
+  constexpr array<T, N + 1> emplace(std::size_t i, A &&...a) const
+  {
+    return insert(i, T{ std::forward<A>(a)... }, make_index_sequence<N + 1>{});
+  }
+
+  template <typename... A>
+  constexpr array<T, N + 1> emplace_back(A &&...a) const
+  {
+    return insert(size(), T{ std::forward<A>(a)... }, make_index_sequence<N + 1>{});
+  }
+
 private:
   template <std::size_t... I>
   constexpr array(T const *ptr, index_sequence<I...> const&)
     : data_{ ptr[I]... }
   {}
+
+  template <std::size_t... I>
+  constexpr array<T, N + 1> insert(std::size_t i, T const &e, index_sequence<I...> const&) const
+  {
+    return array<T, N + 1>({ I == i ? e : data_[I - (I >= i)]... });
+  }
 
   T data_[N];
 };

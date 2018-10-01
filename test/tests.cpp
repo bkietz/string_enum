@@ -8,6 +8,7 @@ constexpr auto color = rekt::make_string_enum("red", "green", "blue");
 static_assert(color("blue") == 0, "blue -> 0");
 static_assert(color("green") == 1, "green -> 1");
 static_assert(color("red") == 2, "red -> 2");
+static_assert(color("octarine") == 3, "_ -> 3"); 
 
 TEST_CASE("basic usage")
 {

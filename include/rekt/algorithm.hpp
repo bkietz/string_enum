@@ -37,6 +37,18 @@ constexpr array<E, N> sort_range(array<E, N> const &a, std::size_t b, std::size_
 template <typename E, std::size_t N, typename P>
 constexpr array<E, N> sort(array<E, N> const &a, P const &p);
 
+template <typename E, std::size_t N, typename P>
+constexpr std::size_t upper_bound_range(array<E, N> const &a, std::size_t b, std::size_t e, E const &v, P const &p);
+
+template <typename E, std::size_t N, typename P>
+constexpr std::size_t upper_bound(array<E, N> const &a, E const &v, P const &p);
+
+template <typename E, std::size_t N, typename P>
+constexpr std::size_t lower_bound_range(array<E, N> const &a, std::size_t b, std::size_t e, E const &v, P const &p);
+
+template <typename E, std::size_t N, typename P>
+constexpr std::size_t lower_bound(array<E, N> const &a, E const &v, P const &p);
+
 template <typename Left, typename Right>
 constexpr int lexicographic_compare(Left const &l, Right const &r, std::size_t b = 0);
 
@@ -177,12 +189,56 @@ template <typename Left, typename Right>
 constexpr int lexicographic_compare(Left const &l, Right const &r, std::size_t b)
 {
   return min(l.size(), r.size()) == b
-    ? int(l.size()) - int(r.size()) // one sequence is a prefix of the other or both sequences are identical
+    ? (l.size() == r.size() ? 0 : l.size() < r.size() ? -1 : 1) // one sequence is a prefix of the other or both sequences are identical
     : l[b] == r[b]
       ? lexicographic_compare(l, r, b + 1)
       : l[b] < r[b]
         ? -1
         : 1;
+}
+
+template <typename E, std::size_t N, typename P>
+constexpr std::size_t upper_bound_range(array<E, N> const &a, std::size_t b, std::size_t e, E const &v, P const &p)
+{
+  return b == e
+    ? b
+    : p(v, a[(b + e) / 2])
+      ? upper_bound_range(a, b, (b + e) / 2, v, p)
+      : upper_bound_range(a, (b + e) / 2 + 1, e, v, p);
+}
+
+template <typename E, std::size_t N, typename P>
+constexpr std::size_t upper_bound(array<E, N> const &a, E const &v, P const &p)
+{
+  return upper_bound_range(a, 0, N, v, p);
+}
+
+template <typename E, std::size_t N>
+constexpr std::size_t upper_bound(array<E, N> const &a, E const &v)
+{
+  return upper_bound_range(a, 0, N, v, less);
+}
+
+template <typename E, std::size_t N, typename P>
+constexpr std::size_t lower_bound_range(array<E, N> const &a, std::size_t b, std::size_t e, E const &v, P const &p)
+{
+  return b == e
+    ? b
+    : !p(a[(b + e) / 2], v)
+      ? lower_bound_range(a, b, (b + e) / 2, v, p)
+      : lower_bound_range(a, (b + e) / 2 + 1, e, v, p);
+}
+
+template <typename E, std::size_t N, typename P>
+constexpr std::size_t lower_bound(array<E, N> const &a, E const &v, P const &p)
+{
+  return lower_bound_range(a, 0, N, v, p);
+}
+
+template <typename E, std::size_t N>
+constexpr std::size_t lower_bound(array<E, N> const &a, E const &v)
+{
+  return lower_bound_range(a, 0, N, v, less);
 }
 
 } // namespace rekt
