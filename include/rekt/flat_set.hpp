@@ -21,11 +21,11 @@ public:
   {}
 
   constexpr flat_set(T const *ptr, Cmp const &cmp = {})
-    : flat_set{ ptr, cmp }
+    : flat_set{ array<T, N>{ ptr }, cmp }
   {}
 
   constexpr flat_set(T const (&arr)[N], Cmp const &cmp = {})
-    : flat_set{ arr, cmp }
+    : flat_set{ array<T, N>{ static_cast<T const*>(arr) }, cmp }
   {}
 
   constexpr flat_set(already_sorted_tag, array<T, N> const &arr, Cmp const &cmp = {})
@@ -36,11 +36,6 @@ public:
   constexpr array<T, N> to_array() const
   {
     return data_;
-  }
-
-  constexpr T const &operator[](std::size_t i) const
-  {
-    return begin()[i];
   }
 
   constexpr std::size_t size() const
