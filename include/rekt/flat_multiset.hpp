@@ -1,37 +1,43 @@
 #pragma once
 
-#include <rekt/array.hpp>
 #include <rekt/algorithm.hpp>
+#include <rekt/array.hpp>
 
 namespace rekt
 {
 
-struct already_sorted_tag {};
+struct already_sorted_tag
+{
+};
 
 template <typename T, std::size_t N, typename Cmp = decltype(less)>
 class flat_multiset
 {
 public:
   constexpr flat_multiset() = delete;
-  constexpr flat_multiset(flat_multiset const&) = default;
-  flat_multiset &operator=(flat_multiset const&) = default;
+  constexpr flat_multiset(flat_multiset const &) = default;
+  flat_multiset &operator=(flat_multiset const &) = default;
 
   constexpr flat_multiset(array<T, N> const &arr, Cmp const &cmp = {})
-    : flat_multiset{ already_sorted_tag(), sort(arr, cmp), cmp }
-  {}
+      : flat_multiset { already_sorted_tag(), sort(arr, cmp), cmp }
+  {
+  }
 
   constexpr flat_multiset(T const *ptr, Cmp const &cmp = {})
-    : flat_multiset{ array<T, N>{ ptr }, cmp }
-  {}
+      : flat_multiset { array<T, N> { ptr }, cmp }
+  {
+  }
 
   constexpr flat_multiset(T const (&arr)[N], Cmp const &cmp = {})
-    : flat_multiset{ array<T, N>{ static_cast<T const*>(arr) }, cmp }
-  {}
+      : flat_multiset { array<T, N> { static_cast<T const *>(arr) }, cmp }
+  {
+  }
 
   constexpr flat_multiset(already_sorted_tag, array<T, N> const &arr, Cmp const &cmp = {})
-    : data_{ arr },
-      less_{ cmp }
-  {}
+      : data_ { arr }
+      , less_ { cmp }
+  {
+  }
 
   constexpr array<T, N> to_array() const
   {
@@ -54,9 +60,9 @@ public:
   }
 
   template <typename... A>
-  constexpr flat_multiset<T, N + 1, Cmp> emplace(A &&...a) const
+  constexpr flat_multiset<T, N + 1, Cmp> emplace(A &&... a) const
   {
-    return insert(T{ std::forward<A>(a)... }, make_index_sequence<N>{});
+    return insert(T { std::forward<A>(a)... }, make_index_sequence<N> {});
   }
 
   constexpr T const &back() const
@@ -66,20 +72,18 @@ public:
 
   constexpr flat_multiset<T, N - 1, Cmp> pop_back() const
   {
-    return flat_multiset<T, N - 1, Cmp>
-    {
+    return flat_multiset<T, N - 1, Cmp> {
       already_sorted_tag(),
-      array<T, N - 1>{ data_.begin() },
+      array<T, N - 1> { data_.begin() },
       less_
     };
   }
 
 private:
   template <std::size_t... I>
-  constexpr flat_multiset<T, N + 1, Cmp> insert(T const &e, index_sequence<I...> const&) const
+  constexpr flat_multiset<T, N + 1, Cmp> insert(T const &e, index_sequence<I...> const &) const
   {
-    return flat_multiset<T, N + 1, Cmp>
-    {
+    return flat_multiset<T, N + 1, Cmp> {
       already_sorted_tag(),
       data_.emplace(lower_bound(data_, e, less_), e),
       less_

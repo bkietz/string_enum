@@ -1,5 +1,5 @@
-#include <rekt/string_enum.hpp>
 #include <rekt/flat_multiset.hpp>
+#include <rekt/string_enum.hpp>
 
 constexpr rekt::array<int, 4> ints({ 0, 1, 2, 3 });
 static_assert(rekt::lexicographic_compare(ints, rekt::array<int, 4>({ 0, 1, 2, 3 })) == 0, "equality comparison");
@@ -14,12 +14,12 @@ static_assert(rekt::lexicographic_compare(ints.emplace_back(4), rekt::array<int,
 
 constexpr rekt::bind_right_hand_side<decltype(rekt::less), int> less_than(int i)
 {
-  return rekt::bind_right_hand_side<decltype(rekt::less), int>{ rekt::less, i };
+  return rekt::bind_right_hand_side<decltype(rekt::less), int> { rekt::less, i };
 };
 static_assert(rekt::partition(ints.emplace(2, 4), less_than(3)).partition_point == 3, "partition an array");
 
 static_assert(rekt::lexicographic_compare(rekt::sort(rekt::array<int, 3>({ 0, 1, 2 })), rekt::array<int, 3>({ 0, 1, 2 })) == 0, "3 element sort");
-static_assert(rekt::lexicographic_compare(rekt::sort(rekt::array<int, 3>({ 1, 2, 0})), rekt::array<int, 3>({ 0, 1, 2 })) == 0, "3 element sort");
+static_assert(rekt::lexicographic_compare(rekt::sort(rekt::array<int, 3>({ 1, 2, 0 })), rekt::array<int, 3>({ 0, 1, 2 })) == 0, "3 element sort");
 static_assert(rekt::lexicographic_compare(rekt::sort(rekt::array<int, 3>({ 2, 0, 1 })), rekt::array<int, 3>({ 0, 1, 2 })) == 0, "3 element sort");
 static_assert(rekt::lexicographic_compare(rekt::sort(rekt::array<int, 3>({ 2, 1, 0 })), rekt::array<int, 3>({ 0, 1, 2 })) == 0, "3 element sort");
 static_assert(rekt::lexicographic_compare(rekt::sort(rekt::array<int, 3>({ 0, 2, 1 })), rekt::array<int, 3>({ 0, 1, 2 })) == 0, "3 element sort");

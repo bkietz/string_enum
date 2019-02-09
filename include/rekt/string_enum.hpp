@@ -12,7 +12,7 @@ class basic_string_enum
 {
 public:
   struct string_view
-    : array_view<Char>
+      : array_view<Char>
   {
     using array_view<Char>::array_view;
     constexpr bool operator<(string_view other) const
@@ -22,10 +22,11 @@ public:
   };
 
   template <std::size_t... N>
-  constexpr basic_string_enum(Char const (&...strings)[N])
-    : strings_{ sort(array<string_view, Count>({ string_view{ static_cast<Char const *>(strings), N - 1 }... })) }
-  {}
-  
+  constexpr basic_string_enum(Char const (&... strings)[N])
+      : strings_ { sort(array<string_view, Count>({ string_view { static_cast<Char const *>(strings), N - 1 }... })) }
+  {
+  }
+
   template <std::size_t N>
   constexpr std::size_t operator()(Char const (&str)[N]) const
   {
@@ -52,9 +53,9 @@ private:
 };
 
 template <typename Char, std::size_t... N>
-constexpr basic_string_enum<Char, sizeof...(N)> make_string_enum(Char const (&...strings)[N])
+constexpr basic_string_enum<Char, sizeof...(N)> make_string_enum(Char const (&... strings)[N])
 {
-  return basic_string_enum<Char, sizeof...(N)>{ strings... };
+  return basic_string_enum<Char, sizeof...(N)> { strings... };
 }
 
 } // namespace rekt
