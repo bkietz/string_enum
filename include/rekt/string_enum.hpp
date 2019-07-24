@@ -38,6 +38,11 @@ public:
     return lookup({ str.c_str(), str.size() });
   }
 
+  constexpr array<string_view, Count> const &strings() const
+  {
+    return strings_;
+  }
+
 private:
   constexpr std::size_t lookup(string_view str) const
   {

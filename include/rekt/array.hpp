@@ -57,6 +57,11 @@ public:
       : array { arr, make_index_sequence<N> {} }
   {
   }
+  template <typename OtherSeq>
+  constexpr array(OtherSeq const &other)
+      : array { other, make_index_sequence<N> {} }
+  {
+  }
 
   constexpr T const *data() const
   {
@@ -96,9 +101,9 @@ public:
   }
 
 private:
-  template <std::size_t... I>
-  constexpr array(T const *ptr, index_sequence<I...> const &)
-      : data_ { ptr[I]... }
+  template <typename Indexable, std::size_t... I>
+  constexpr array(Indexable const &seq, index_sequence<I...> const &)
+      : data_ { seq[I]... }
   {
   }
 

@@ -29,6 +29,9 @@ constexpr partition_result<E, N> partition_range(array<E, N> const &a,
                                                  std::size_t b, std::size_t e,
                                                  P const &p);
 
+template <typename I, typename P>
+I find_if(I b, I e, P const &p);
+
 template <typename E, std::size_t N, typename P>
 constexpr array<E, N> sort_2(array<E, N> const &a, std::size_t b, P const &p);
 
@@ -264,6 +267,59 @@ template <typename E, std::size_t N>
 constexpr std::size_t lower_bound(array<E, N> const &a, E const &v)
 {
   return lower_bound_range(a, 0, N, v, less);
+}
+
+template <typename Iter, typename Test>
+bool test_at(std::size_t I, Iter begin, Iter end, Test const &test)
+{
+  return begin + I >= end ? false : test(*(begin + I));
+}
+
+template <typename P>
+struct not_
+{
+  constexpr not_(P const &p)
+      : p_(p)
+  {
+  }
+
+  template <typename T>
+  constexpr bool operator()(T &&t) const
+  {
+    return !p(std::forward<T>(t));
+  }
+
+  P p_;
+};
+
+template <typename I, typename P>
+I find_if_not(I b, I e, P const &p)
+{
+  return find_if(b, e, not_<P>(p));
+}
+
+template <typename I, typename P>
+I find_if(I b, I e, P const &p)
+{
+  return test_at(0, b, e, p)
+      ? b + 0
+      : test_at(1, b, e, p)
+          ? b + 1
+          : test_at(2, b, e, p)
+              ? b + 2
+              : test_at(3, b, e, p)
+                  ? b + 3
+                  : test_at(4, b, e, p)
+                      ? b + 4
+                      : test_at(5, b, e, p)
+                          ? b + 5
+                          : test_at(6, b, e, p)
+                              ? b + 6
+                              : test_at(7, b, e, p)
+                                  ? b + 7
+                                  : b + 7 >= e
+                                      ? e
+                                      : find_if(b + 8, e, p);
 }
 
 } // namespace rekt
